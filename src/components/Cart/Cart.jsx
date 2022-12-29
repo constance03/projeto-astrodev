@@ -1,127 +1,121 @@
 import React, { useContext, useEffect } from "react";
+import trash from "../../assets/trash.svg";
 import {
-  BotaoLixo,
-  BotaoQuantidade,
-  BotoesQuantidade,
-  ContainerBotao,
-  DivCarrinho,
-  DivItensCarrinho,
+  ButtonQuantity,
+  ButtonsQuantity,
+  ButtonTrash,
+  ContainerButton,
+  DivCart,
+  DivItemsCart,
   Total,
 } from "./cartStyled";
-import lixo from "../../assets/lixo.svg";
 import { GlobalContext } from "../../contexts/GlobalContext";
 import { Button } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { goToCheckOutPage } from "../../routes/coordinator";
 
 export function Cart() {
+  // Using useNavigate to change the pages
   const navigate = useNavigate();
   const context = useContext(GlobalContext);
-  const { carrinho, setCarrinho, setComponentesCarrinho, componentesCarrinho } =
-    context;
+  const { cart, setCart, cartComponents, setCartComponents } = context;
 
-  //Adicionar itens no localStorage
+  // Add items on localStorage to save if the page is refreshed
+  useEffect(() => {
+    if (cart.length > 0) {
+      const cartString = JSON.stringify(cart);
+      localStorage.setItem("cart", cartString);
+    }
+  }, [cart]);
 
   useEffect(() => {
-    if (carrinho.length > 0) {
-      const carrinhoString = JSON.stringify(carrinho)
-      localStorage.setItem("carrinho", carrinhoString)
+    const newCart = JSON.parse(localStorage.getItem("cart"));
+    if (newCart !== null) {
+      setCart(newCart);
     }
-  }, [carrinho])
+    setCartComponents({ ...cartComponents, badge: true });
+  }, []);
 
-  useEffect(() => {
-    const novoCarrinho = JSON.parse(localStorage.getItem("carrinho"))
-    if (novoCarrinho !== null) {
-      setCarrinho(novoCarrinho)
-    }
-    setComponentesCarrinho({...componentesCarrinho, badge: true})
-  }, [])
-
-  //Cacular valor total do carrinho
-  let valorTotal = 0;
-  carrinho.map(
-    (produto) => (valorTotal = valorTotal + produto.valor * produto.quantidade)
+  // Caculate the total price of the cart
+  let totalValue = 0;
+  cart.map(
+    (product) => (totalValue = totalValue + product.value * product.quantity)
   );
 
-  //Clicar para aumentar e diminuir a quantidade de um item do carrinho
-  const onClickDiminuirQuantidade = (id) => {
-    const i = carrinho.findIndex((item) => item.id === id);
-    carrinho.map((produto) => {
-      if (produto.quantidade > 1) {
-        const novoCarrinho = [...carrinho];
-        novoCarrinho[i] = {
-          ...novoCarrinho[i],
-          quantidade: novoCarrinho[i].quantidade - 1,
+  // Click to reduce and increase the quantity of an item on cart
+  const onClickReduceQuantity = (id) => {
+    const i = cart.findIndex((item) => item.id === id);
+    cart.map((product) => {
+      if (product.quantity > 1) {
+        const newCart = [...cart];
+        newCart[i] = {
+          ...newCart[i],
+          quantity: newCart[i].quantity - 1,
         };
-        setCarrinho(novoCarrinho);
+        setCart(newCart);
       } else {
-        const carrinhoSemItem = carrinho.filter((item) => item.id !== id);
-        setCarrinho(carrinhoSemItem);
+        const noItemCart = cart.filter((item) => item.id !== id);
+        setCart(noItemCart);
       }
     });
   };
 
-  const onClickAumentarQuantidade = (id) => {
-    const i = carrinho.findIndex((item) => item.id === id);
-    carrinho.map((produto) => {
-      if (produto.quantidade < 10) {
-        const novoCarrinho = [...carrinho];
-        novoCarrinho[i] = {
-          ...novoCarrinho[i],
-          quantidade: novoCarrinho[i].quantidade + 1,
+  const onClickIncreaseQuantity = (id) => {
+    const i = cart.findIndex((item) => item.id === id);
+    cart.map((produto) => {
+      if (produto.quantity < 10) {
+        const newCart = [...cart];
+        newCart[i] = {
+          ...newCart[i],
+          quantity: newCart[i].quantity + 1,
         };
-        setCarrinho(novoCarrinho);
+        setCart(newCart);
       } else {
         alert("Só é permitido comprar 10 itens de cada produto por pessoa");
       }
     });
   };
 
-  //Deletar item do carrinho
-  const onClickDeletar = (id) => {
-    const carrinhoSemItem = carrinho.filter((item) => item.id !== id);
-    setCarrinho(carrinhoSemItem);
-    if (carrinho.length <= 1) {
-      setComponentesCarrinho({ ...componentesCarrinho, badge: false });
-      const arrayVazia = JSON.stringify([])
-      localStorage.setItem("carrinho", arrayVazia)
+  // Delete item from cart
+  const onClickDelete = (id) => {
+    const noItemCart = cart.filter((item) => item.id !== id);
+    setCart(noItemCart);
+    if (cart.length <= 1) {
+      setCartComponents({ ...cartComponents, badge: false });
+      const emptyArray = JSON.stringify([]);
+      localStorage.setItem("cart", emptyArray);
     }
   };
 
-  //Pegar itens adicionados no carrinho e mostrar na tela
-  const adicionadoAoCarrinho = carrinho.map((produto) => {
+  // Get items added on cart and show them on screen
+  const addedToCart = cart.map((product) => {
     return (
-      <DivItensCarrinho key={produto.id}>
-        <img src={produto.img} width="100px" />
-        <p>U${produto.valor},00</p>
-        <ContainerBotao>
-          <BotoesQuantidade>
-            <BotaoQuantidade
-              onClick={() => onClickDiminuirQuantidade(produto.id)}
-            >
+      <DivItemsCart key={product.id}>
+        <img src={product.img} width="100px" />
+        <p>U${product.value},00</p>
+        <ContainerButton>
+          <ButtonsQuantity>
+            <ButtonQuantity onClick={() => onClickReduceQuantity(product.id)}>
               -
-            </BotaoQuantidade>
-            <p>{produto.quantidade}</p>
-            <BotaoQuantidade
-              onClick={() => onClickAumentarQuantidade(produto.id)}
-            >
+            </ButtonQuantity>
+            <p>{product.quantity}</p>
+            <ButtonQuantity onClick={() => onClickIncreaseQuantity(product.id)}>
               +
-            </BotaoQuantidade>
-          </BotoesQuantidade>
-          <BotaoLixo onClick={() => onClickDeletar(produto.id)}>
-            <img src={lixo} width="20px" />
-          </BotaoLixo>
-        </ContainerBotao>
-      </DivItensCarrinho>
+            </ButtonQuantity>
+          </ButtonsQuantity>
+          <ButtonTrash onClick={() => onClickDelete(product.id)}>
+            <img src={trash} width="20px" />
+          </ButtonTrash>
+        </ContainerButton>
+      </DivItemsCart>
     );
   });
 
-
-
   return (
-    <DivCarrinho>
-      {adicionadoAoCarrinho}
-      <Total>Total = U${valorTotal},00</Total>
+    <DivCart>
+      {/* Call the function to show the items on cart */}
+      {addedToCart}
+      <Total>Total = U${totalValue},00</Total>
       <Button
         colorScheme={"red"}
         borderRadius={0}
@@ -131,6 +125,6 @@ export function Cart() {
       >
         Concluir compra
       </Button>
-    </DivCarrinho>
+    </DivCart>
   );
 }

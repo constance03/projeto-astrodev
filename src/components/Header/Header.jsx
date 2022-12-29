@@ -1,6 +1,6 @@
 import React from "react";
 import { DivHeader } from "./headerStyled";
-import logo from '../../assets/logo.png';
+import logo from "../../assets/logo.png";
 
 const Header = () => {
   return (

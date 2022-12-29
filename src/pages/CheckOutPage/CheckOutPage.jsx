@@ -15,135 +15,130 @@ import Header from "../../components/Header/Header";
 import { GlobalContext } from "../../contexts/GlobalContext";
 import { goToHomePage } from "../../routes/coordinator";
 import {
-  Carrinho,
   Container,
-  DivItensCarrinho,
-  Entrega,
   NavStyled,
-  TituloCarrinho,
-  TituloEntrega,
-  BotaoLixo,
-  BotaoQuantidade,
-  BotoesQuantidade,
-  ContainerBotao,
-  DivTotalBotao,
+  DivItemsCart,
+  ContainerButton,
+  ButtonsQuantity,
+  ButtonQuantity,
+  ButtonTrash,
+  Deliver,
+  TitleDeliver,
+  Cart,
+  TitleCart,
+  DivTotalButton,
 } from "./CheckOutPageStyled";
-import lixo from "../../assets/lixo.svg";
+import trash from "../../assets/trash.svg";
 import Footer from "../../components/Footer/Footer";
-import { useState } from "react";
 
 const CheckOutPage = () => {
   const navigate = useNavigate();
   const context = useContext(GlobalContext);
-  const { carrinho, setCarrinho, componentesCarrinho, setComponentesCarrinho } =
-    context;
+  const { cart, setCart, cartComponents, setCartComponents } = context;
 
-  //Adicionar itens no localStorage
+  // Add items on localStorage
   useEffect(() => {
-    if (carrinho.length > 0) {
-      const carrinhoString = JSON.stringify(carrinho);
-      localStorage.setItem("carrinho", carrinhoString);
+    if (cart.length > 0) {
+      const cartString = JSON.stringify(cart);
+      localStorage.setItem("cart", cartString);
     }
-  }, [carrinho]);
+  }, [cart]);
 
   useEffect(() => {
-    const novoCarrinho = JSON.parse(localStorage.getItem("carrinho"));
-    if (novoCarrinho !== null) {
-      setCarrinho(novoCarrinho);
+    const newCart = JSON.parse(localStorage.getItem("cart"));
+    if (newCart !== null) {
+      setCart(newCart);
     }
-    setComponentesCarrinho({ ...componentesCarrinho, badge: true });
+    setCartComponents({ ...cartComponents, badge: true });
   }, []);
 
-  //Cacular valor total do carrinho
-  let valorTotal = 0;
-  carrinho.map(
-    (produto) => (valorTotal = valorTotal + produto.valor * produto.quantidade)
+  // Caculate total price of cart
+  let totalValue = 0;
+  cart.map(
+    (product) => (totalValue = totalValue + product.value * product.quantity)
   );
 
-  //Clicar para aumentar e diminuir a quantidade de um item do carrinho
-  const onClickDiminuirQuantidade = (id) => {
-    const i = carrinho.findIndex((item) => item.id === id);
-    carrinho.map((produto) => {
-      if (produto.quantidade > 1) {
-        const novoCarrinho = [...carrinho];
-        novoCarrinho[i] = {
-          ...novoCarrinho[i],
-          quantidade: novoCarrinho[i].quantidade - 1,
+  // Click to decrease or increase quantity of an cart item
+  const onClickReduceQuantity = (id) => {
+    const i = cart.findIndex((item) => item.id === id);
+    cart.map((product) => {
+      if (product.quantity > 1) {
+        const newCart = [...cart];
+        newCart[i] = {
+          ...newCart[i],
+          quantity: newCart[i].quantity - 1,
         };
-        setCarrinho(novoCarrinho);
+        setCart(newCart);
       } else {
-        const carrinhoSemItem = carrinho.filter((item) => item.id !== id);
-        setCarrinho(carrinhoSemItem);
+        const cartNoItem = cart.filter((item) => item.id !== id);
+        setCart(cartNoItem);
       }
     });
   };
 
-  const onClickAumentarQuantidade = (id) => {
-    const i = carrinho.findIndex((item) => item.id === id);
-    carrinho.map((produto) => {
-      if (produto.quantidade < 10) {
-        const novoCarrinho = [...carrinho];
-        novoCarrinho[i] = {
-          ...novoCarrinho[i],
-          quantidade: novoCarrinho[i].quantidade + 1,
+  const onClickIncreaseQuantity = (id) => {
+    const i = cart.findIndex((item) => item.id === id);
+    cart.map((product) => {
+      if (product.quantity < 10) {
+        const newCart = [...cart];
+        newCart[i] = {
+          ...newCart[i],
+          quantity: newCart[i].quantity + 1,
         };
-        setCarrinho(novoCarrinho);
+        setCart(newCart);
       } else {
-        alert("Só é permitido comprar 10 itens de cada produto por pessoa");
+        alert("Só é permitido comprar 10 itens de cada product por pessoa");
       }
     });
   };
 
-  //Deletar item do carrinho
-  const onClickDeletar = (id) => {
-    const carrinhoSemItem = carrinho.filter((item) => item.id !== id);
-    setCarrinho(carrinhoSemItem);
-    if (carrinho.length <= 1) {
-      setComponentesCarrinho({ ...componentesCarrinho, badge: false });
-      const arrayVazia = JSON.stringify([]);
-      localStorage.setItem("carrinho", arrayVazia);
+  //Delete item of cart
+  const onClickDelete = (id) => {
+    const cartNoItem = cart.filter((item) => item.id !== id);
+    setCart(cartNoItem);
+    if (cart.length <= 1) {
+      setCartComponents({ ...cartComponents, badge: false });
+      const emptyArray = JSON.stringify([]);
+      localStorage.setItem("cart", emptyArray);
     }
   };
 
-  // Exibir itens do carrinho na página
-  const exibirCarrinho = carrinho.map((produto) => {
+  // Display cart items on page
+  const showCart = cart.map((product) => {
     return (
-      <DivItensCarrinho key={produto.id}>
-        <img src={produto.img} width="100px" />
+      <DivItemsCart key={product.id}>
+        <img src={product.img} width="100px" />
         <div>
-          <p>{produto.destino}</p>
-          <p>U${produto.valor},00</p>
+          <p>{product.destination}</p>
+          <p>U${product.value},00</p>
         </div>
 
-        <ContainerBotao>
-          <BotoesQuantidade>
-            <BotaoQuantidade
-              onClick={() => onClickDiminuirQuantidade(produto.id)}
-            >
+        <ContainerButton>
+          <ButtonsQuantity>
+            <ButtonQuantity onClick={() => onClickReduceQuantity(product.id)}>
               -
-            </BotaoQuantidade>
-            <p>{produto.quantidade}</p>
-            <BotaoQuantidade
-              onClick={() => onClickAumentarQuantidade(produto.id)}
-            >
+            </ButtonQuantity>
+            <p>{product.quantity}</p>
+            <ButtonQuantity onClick={() => onClickIncreaseQuantity(product.id)}>
               +
-            </BotaoQuantidade>
-          </BotoesQuantidade>
-          <BotaoLixo onClick={() => onClickDeletar(produto.id)}>
-            <img src={lixo} width="20px" />
-          </BotaoLixo>
-        </ContainerBotao>
-      </DivItensCarrinho>
+            </ButtonQuantity>
+          </ButtonsQuantity>
+          <ButtonTrash onClick={() => onClickDelete(product.id)}>
+            <img src={trash} width="20px" />
+          </ButtonTrash>
+        </ContainerButton>
+      </DivItemsCart>
     );
   });
 
-  const onClickFinalizarPedido = () => {
-    if (carrinho.length >= 1) {
+  // Click to finalize the order and reset cart
+  const onClickCloseOrder = () => {
+    if (cart.length >= 1) {
       alert("Compra concluída com sucesso!");
-      setCarrinho([]);
-      const arrayVazia = JSON.stringify([]);
-      localStorage.setItem("carrinho", arrayVazia);
-      setComponentesCarrinho({ ...componentesCarrinho, divCarrinho: false });
+      setCart([]);
+      const emptyArray = JSON.stringify([]);
+      localStorage.setItem("cart", emptyArray);
+      setCartComponents({ ...cartComponents, divCart: false });
       goToHomePage(navigate);
     } else {
       alert(
@@ -167,10 +162,10 @@ const CheckOutPage = () => {
       </NavStyled>
 
       <Container>
-        <Entrega>
-          <TituloEntrega>
+        <Deliver>
+          <TitleDeliver>
             <p>Entrega</p>
-          </TituloEntrega>
+          </TitleDeliver>
 
           <Stack
             spacing={3}
@@ -184,13 +179,13 @@ const CheckOutPage = () => {
             <Stack spacing={3}>
               <HStack>
                 <Box>
-                  <FormControl id="nome" isRequired>
+                  <FormControl id="name" isRequired>
                     <FormLabel>Nome</FormLabel>
                     <Input type="text" />
                   </FormControl>
                 </Box>
                 <Box>
-                  <FormControl id="sobrenome" isRequired>
+                  <FormControl id="lastname" isRequired>
                     <FormLabel>Sobrenome</FormLabel>
                     <Input type="text" />
                   </FormControl>
@@ -200,7 +195,7 @@ const CheckOutPage = () => {
                 <FormLabel>Email</FormLabel>
                 <Input type="email" />
               </FormControl>
-              <FormControl id="endereco" isRequired>
+              <FormControl id="address" isRequired>
                 <FormLabel>Endereço</FormLabel>
                 <InputGroup>
                   <Input type={"text"} />
@@ -209,9 +204,9 @@ const CheckOutPage = () => {
             </Stack>
           </Stack>
 
-          <TituloEntrega>
+          <TitleDeliver>
             <p>Pagamento</p>
-          </TituloEntrega>
+          </TitleDeliver>
 
           <Stack
             spacing={3}
@@ -223,23 +218,23 @@ const CheckOutPage = () => {
           >
             <Stack spacing={3}>
               <Box>
-                <FormControl id="cartao" isRequired>
+                <FormControl id="card" isRequired>
                   <FormLabel>Número do cartão</FormLabel>
                   <Input type="number" />
                 </FormControl>
               </Box>
               <Box>
-                <FormControl id="codigo" isRequired>
+                <FormControl id="code" isRequired>
                   <FormLabel>CVC</FormLabel>
                   <Input type="number" />
                 </FormControl>
               </Box>
 
-              <FormControl id="dataVencimento" isRequired>
+              <FormControl id="date" isRequired>
                 <FormLabel>Data de vencimento</FormLabel>
                 <Input type="date" />
               </FormControl>
-              <FormControl id="cpf" isRequired>
+              <FormControl id="id" isRequired>
                 <FormLabel>CPF</FormLabel>
                 <InputGroup>
                   <Input type={"number"} />
@@ -247,27 +242,27 @@ const CheckOutPage = () => {
               </FormControl>
             </Stack>
           </Stack>
-        </Entrega>
+        </Deliver>
 
-        <Carrinho>
-          <TituloCarrinho>
+        <Cart>
+          <TitleCart>
             <p>Meu carrinho:</p>
-          </TituloCarrinho>
-          {exibirCarrinho}
+          </TitleCart>
+          {showCart}
 
-          <DivTotalBotao>
-            <p>Total = U${valorTotal},00</p>
+          <DivTotalButton>
+            <p>Total = U${totalValue},00</p>
             <Button
               colorScheme={"red"}
               borderRadius={0}
               onClick={() => {
-                onClickFinalizarPedido();
+                onClickCloseOrder();
               }}
             >
               Concluir pedido
             </Button>
-          </DivTotalBotao>
-        </Carrinho>
+          </DivTotalButton>
+        </Cart>
       </Container>
 
       <Footer />

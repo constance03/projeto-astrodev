@@ -9,57 +9,65 @@ import {
   Icon,
   Tooltip,
   Button,
-  Text
-} from '@chakra-ui/react';
-import { FiShoppingCart } from 'react-icons/fi';
+  Text,
+} from "@chakra-ui/react";
+import { FiShoppingCart } from "react-icons/fi";
 
 function Card(props) {
+  const context = useContext(GlobalContext);
+  const {
+    spaceTravels,
+    cart,
+    setCart,
+    setCounter,
+    cartComponents,
+    setCartComponents,
+  } = context;
 
-const context = useContext(GlobalContext);
-const { carrinho, setCarrinho, viagensEspaciais, setContador, setComponentesCarrinho, componentesCarrinho } = context;
-const { viagem } = props;
+  const { trip } = props;
 
   const data = {
-    imageURL: viagem.img,
-    name: viagem.destino,
-    price: viagem.valor,
-    description: viagem.descricao
+    imageURL: trip.img,
+    name: trip.destination,
+    price: trip.value,
+    description: trip.description,
   };
 
-  //Calcular a quantidade total
-  let quantidadeTotal = 0
-  carrinho.map((produto) => (quantidadeTotal = quantidadeTotal + produto.quantidade));
-  setContador(quantidadeTotal)
+  // Calculate the total quantity
+  let totalQuantity = 0;
+  cart.map((product) => (totalQuantity = totalQuantity + product.quantity));
+  setCounter(totalQuantity);
 
-  const onClickAdicionar = (id) => {
-  const i = carrinho.findIndex((item) => item.id === id);
+  // Add a product to the cart
+  const onClickAdd = (id) => {
+    const i = cart.findIndex((item) => item.id === id);
     if (i !== -1) {
-      const novoCarrinho = [...carrinho];
-      novoCarrinho[i] = {
-        ...novoCarrinho[i],
-        quantidade: novoCarrinho[i].quantidade + 1
+      const newCart = [...cart];
+      newCart[i] = {
+        ...newCart[i],
+        quantity: newCart[i].quantity + 1,
       };
-      setCarrinho(novoCarrinho);
+      setCart(newCart);
     } else {
-      const produtoEncontrado = viagensEspaciais.find((viagem) => viagem.id === id);
-      const novoProduto = { ...produtoEncontrado, quantidade: 1 };
-      setCarrinho([...carrinho, novoProduto]);
-      setComponentesCarrinho({...componentesCarrinho, badge: true})
+      const productFound = spaceTravels.find((trip) => trip.id === id);
+      const newProduct = { ...productFound, quantity: 1 };
+      setCart([...cart, newProduct]);
+      setCartComponents({ ...cartComponents, badge: true });
     }
-  }
+  };
 
   return (
+    // Using Chakra to create the cards
     <Flex p="1vw" w="25vw" alignItems="center" justifyContent="center">
       <Box
-        bg={useColorModeValue('white', 'gray.800')}
+        bg={useColorModeValue("white", "gray.800")}
         maxW="sm"
         borderWidth="1px"
         rounded="lg"
         shadow="lg"
         position="relative"
         h="65vh"
-        >
-
+      >
         <Image
           src={data.imageURL}
           alt={`Picture of ${data.name}`}
@@ -69,9 +77,9 @@ const { viagem } = props;
 
         <Box p="6">
           <Box d="flex" alignItems="baseline">
-              <Badge rounded="full" px="2" fontSize="0.8em" colorScheme="blue">
-                {viagem.nave}
-              </Badge>
+            <Badge rounded="full" px="2" fontSize="0.8em" colorScheme="blue">
+              {trip.ship}
+            </Badge>
           </Box>
           <Flex mt="1" justifyContent="space-between" alignContent="center">
             <Box
@@ -80,26 +88,32 @@ const { viagem } = props;
               as="h4"
               lineHeight="tight"
               isTruncated
-              w="18vw">
+              w="18vw"
+            >
               {data.name}
-              <Text fontSize='xs'>{data.description}</Text>
+              <Text fontSize="xs">{data.description}</Text>
             </Box>
             <Tooltip
               label="Adicionar ao carrinho"
               bg="white"
-              placement={'top'}
-              color={'gray.800'}
-              fontSize={'1em'}
+              placement={"top"}
+              color={"gray.800"}
+              fontSize={"1em"}
+            >
+              <Button
+                variant="ghost"
+                w="0.5vw"
+                pl="1vw"
+                onClick={() => onClickAdd(trip.id)}
               >
-              <Button variant='ghost' w="0.5vw" pl="1vw" onClick={() => onClickAdicionar(viagem.id)}>
-                <Icon as={FiShoppingCart} h={7} w={7} alignSelf={'center'} />
+                <Icon as={FiShoppingCart} h={7} w={7} alignSelf={"center"} />
               </Button>
             </Tooltip>
           </Flex>
 
           <Flex justifyContent="space-between" alignContent="center">
-            <Box fontSize="2xl" color={useColorModeValue('gray.800', 'white')}>
-              <Box as="span" color={'gray.600'} fontSize="lg">
+            <Box fontSize="2xl" color={useColorModeValue("gray.800", "white")}>
+              <Box as="span" color={"gray.600"} fontSize="lg">
                 $
               </Box>
               {data.price.toFixed(2)}

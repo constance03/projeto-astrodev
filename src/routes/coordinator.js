@@ -1,7 +1,7 @@
 export const goToHomePage = (navigate) => {
-    navigate("/")
-}
+  navigate("/");
+};
 
 export const goToCheckOutPage = (navigate) => {
-    navigate("/checkout")
-}
+  navigate("/checkout");
+};

@@ -1,5 +1,5 @@
 import {
-  ContainerProdutos,
+  ContainerProducts,
   Container,
   H2,
   Main,
@@ -15,7 +15,7 @@ import Footer from "../../components/Footer/Footer.jsx";
 
 export const HomePage = () => {
   const context = useContext(GlobalContext);
-  const { viagensEspaciais, componentesCarrinho, filtro } = context;
+  const { spaceTravels, filter, cartComponents } = context;
 
   return (
     <Container>
@@ -24,46 +24,48 @@ export const HomePage = () => {
       <Main>
         <Aside>
           <Filter />
-          {componentesCarrinho.divCarrinho && <Cart />}
+          {/* Condicional render to show the cart div */}
+          {cartComponents.divCart && <Cart />}
         </Aside>
-        <ContainerProdutos>
+        <ContainerProducts>
           <h1>Viaje para o espaço com a Astrodev</h1>
           <H2>
             Escolha um de nossos pacotes disponíveis e aproveite uma viagem
             interestelar com o melhor preço do mercado!
           </H2>
-          {viagensEspaciais
-            .filter((viagem) => {
-              return filtro.filtraNome
-                ? viagem.destino
+          {/* Redering the array with the filters applied */}
+          {spaceTravels
+            .filter((trip) => {
+              return filter.filterName
+                ? trip.destino
                     .toLowerCase()
-                    .includes(filtro.filtraNome.toLowerCase())
-                : viagem;
+                    .includes(filter.filterName.toLowerCase())
+                : trip;
             })
             .sort((a, b) => {
-              if (filtro.ordenar === "crescente") {
-                if (a.valor > b.valor) return 1;
-                if (a.valor < b.valor) return -1;
+              if (filter.order === "crescent") {
+                if (a.value > b.value) return 1;
+                if (a.value < b.value) return -1;
               }
-              if (filtro.ordenar === "decrescente") {
-                if (a.valor < b.valor) return 1;
-                if (a.valor > b.valor) return -1;
-              }
-            })
-            .filter((viagem) => {
-              if (+filtro.filtraValorMinimo <= viagem.valor) return viagem;
-            })
-            .filter((viagem) => {
-              if (+filtro.filtraValorMaximo >= viagem.valor) {
-                return viagem;
-              } else if (+filtro.filtraValorMaximo.length === 0) {
-                return viagem;
+              if (filter.order === "decrescent") {
+                if (a.value < b.value) return 1;
+                if (a.value > b.value) return -1;
               }
             })
-            .map((viagem) => {
-              return <Card key={viagem.id} viagem={viagem} />;
+            .filter((trip) => {
+              if (+filter.filterMinValue <= trip.value) return trip;
+            })
+            .filter((trip) => {
+              if (+filter.filterMaxValue >= trip.value) {
+                return trip;
+              } else if (+filter.filterMaxValue.length === 0) {
+                return trip;
+              }
+            })
+            .map((trip) => {
+              return <Card key={trip.id} trip={trip} />;
             })}
-        </ContainerProdutos>
+        </ContainerProducts>
       </Main>
       <Footer />
     </Container>
