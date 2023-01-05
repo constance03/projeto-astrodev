@@ -19,7 +19,6 @@ O projeto é um site de venda de viagens espaciais que possui duas páginas: Hom
 
 ## 🖼 **Layout**
 ![tela-inicial](./src/assets/homepage.png)
-![div-cart](./src/assets/div-cart.png)
 ![tela-checkout](./src/assets/checkout.png)
 
 ## 🎯 **Demonstração**
