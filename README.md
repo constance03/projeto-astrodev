@@ -1,6 +1,6 @@
 # **Projeto Astrodev Store**
 
-O projeto é um site de venda de viagens espaciais que possui duas páginas: Home e Checkout. O projeto terá como fonte de dados uma array fictícia de viagens espaciais. Esse projeto foi desenvolvido como parte do bootcamp Labenu.
+O projeto é um site de venda de viagens espaciais que possui duas páginas: Home e Checkout. O projeto tem como fonte de dados uma array fictícia de viagens espaciais. Esse projeto foi desenvolvido como parte do bootcamp Labenu.
 
 ## **Índice**
 - <a href="#funcionalidades-do-projeto">Funcionalidades do projeto</a>
